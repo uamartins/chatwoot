@@ -15,3 +15,7 @@ vendor/bundle
 .DS_Store
 *.swp
 *~
+
+# uam: a imagem do fork nunca leva o código Enterprise (licença da Chatwoot Inc.)
+enterprise
+spec/enterprise

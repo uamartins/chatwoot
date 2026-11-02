@@ -152,4 +152,7 @@ COPY --from=pre-builder /app/.git_sha /app/.git_sha
 
 WORKDIR /app
 
+# uam: edição aberta (sem enterprise/), como na imagem -ce do oficial
+ENV CW_EDITION=ce
+
 EXPOSE 3000

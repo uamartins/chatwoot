@@ -1,0 +1,68 @@
+# uam: publica a imagem do fork no GHCR, sem enterprise/, e confere a imagem publicada.
+name: uam publish
+
+on:
+  push:
+    tags: ['v*-uam.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag a publicar (ex. v4.19.1-uam.0); ignorada com check_only
+        required: true
+      check_only:
+        description: Só testa o bin/uam-check-image contra as imagens EE e CE do oficial
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  check-only:
+    if: github.event_name == 'workflow_dispatch' && inputs.check_only
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: EE precisa falhar e CE precisa passar
+        run: |
+          if bin/uam-check-image chatwoot/chatwoot:v4.19.1; then
+            echo "a conferência deixou passar a imagem EE" >&2
+            exit 1
+          fi
+          bin/uam-check-image chatwoot/chatwoot:v4.19.1-ce
+
+  image:
+    if: github.event_name == 'push' || !inputs.check_only
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.ref || format('refs/tags/{0}', inputs.tag) }}
+
+      - name: Nome da imagem
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}:${TAG}" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.IMAGE }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Conferir a imagem publicada
+        run: bin/uam-check-image "$IMAGE"

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# uam: confere que uma imagem do Chatwoot não leva o código Enterprise.
+# Uso: bin/uam-check-image <imagem>
+# Exit 0 só se /app/enterprise e /app/spec/enterprise não existem e
+# ChatwootApp.enterprise? é falso dentro da imagem.
+set -euo pipefail
+
+if [ $# -ne 1 ]; then
+  echo "uso: bin/uam-check-image <imagem>" >&2
+  exit 2
+fi
+
+if docker run --rm --entrypoint sh "$1" -c '
+  test ! -e /app/enterprise || { echo "tem /app/enterprise"; exit 1; }
+  test ! -e /app/spec/enterprise || { echo "tem /app/spec/enterprise"; exit 1; }
+  cd /app && ruby -r ./lib/chatwoot_app.rb -e "exit(ChatwootApp.enterprise? ? 1 : 0)" ||
+    { echo "ChatwootApp.enterprise? = true"; exit 1; }
+'; then
+  echo "ok: sem enterprise ($1)"
+else
+  echo "FALHOU: $1 leva código Enterprise" >&2
+  exit 1
+fi
