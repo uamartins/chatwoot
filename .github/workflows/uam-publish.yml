@@ -10,7 +10,7 @@ on:
         description: Tag a publicar (ex. v4.19.1-uam.0); ignorada com check_only
         required: true
       check_only:
-        description: Só testa o bin/uam-check-image contra as imagens EE e CE do oficial
+        description: Só testa o bin/uam-check-image contra as imagens EE e CE do oficial (as duas precisam falhar)
         type: boolean
         default: false
 
@@ -24,13 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: EE precisa falhar e CE precisa passar
+      # uam: a EE falha por ter enterprise/; a CE, por não ter custom/ (os trechos do native).
+      # O caso positivo é o job image, que confere a imagem do fork depois de publicar.
+      - name: EE e CE do oficial precisam falhar
         run: |
-          if bin/uam-check-image chatwoot/chatwoot:v4.19.1; then
-            echo "a conferência deixou passar a imagem EE" >&2
-            exit 1
-          fi
-          bin/uam-check-image chatwoot/chatwoot:v4.19.1-ce
+          for img in chatwoot/chatwoot:v4.19.1 chatwoot/chatwoot:v4.19.1-ce; do
+            if bin/uam-check-image "$img"; then
+              echo "a conferência deixou passar $img" >&2
+              exit 1
+            fi
+          done
 
   image:
     if: github.event_name == 'push' || !inputs.check_only

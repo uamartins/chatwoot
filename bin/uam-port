@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# uam: copia arquivos da fazer.ai (MIT) byte a byte, no mesmo caminho, e registra a origem.
+#
+#   bin/uam-port <caminho>...
+#
+# Grava o arquivo da tag $UAM_FAZER_TAG (padrão v4.19.0-fazer-ai.141), faz `git add` e
+# acrescenta ou atualiza a linha em uam/ported.tsv (path, tag, blob, uam_edits).
+# Recusa enterprise/ e spec/enterprise/: esse código não é MIT e nunca entra no fork.
+# A coluna uam_edits fica "-" na cópia; quem fizer uma edição `uam:` depois troca o "-"
+# por uma descrição curta.
+set -euo pipefail
+
+TAG=${UAM_FAZER_TAG:-v4.19.0-fazer-ai.141}
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+MANIFEST="$ROOT/uam/ported.tsv"
+cd "$ROOT"
+
+[ $# -gt 0 ] || { echo "uso: bin/uam-port <caminho>..." >&2; exit 2; }
+
+for p in "$@"; do
+  case "$p" in
+    enterprise/*|spec/enterprise/*|*/enterprise/*)
+      echo "uam-port: recusado, código Enterprise: $p" >&2; exit 1 ;;
+  esac
+  blob=$(git rev-parse --verify --quiet "$TAG:$p") || { echo "uam-port: $p não existe em $TAG" >&2; exit 1; }
+  mkdir -p "$(dirname "$p")"
+  git cat-file -p "$blob" > "$p"
+  if [ "$(git ls-tree "$TAG" -- "$p" | awk '{print $1}')" = 100755 ]; then chmod +x "$p"; fi
+  git add -- "$p"
+  python3 - "$MANIFEST" "$p" "$TAG" "$blob" <<'PY'
+import sys
+manifest, path, tag, blob = sys.argv[1:]
+lines = open(manifest).read().splitlines()
+head, rows = lines[0], [l.split('\t') for l in lines[1:] if l]
+for r in rows:
+    if r[0] == path:
+        r[1], r[2] = tag, blob
+        break
+else:
+    rows.append([path, tag, blob, '-'])
+rows.sort(key=lambda r: r[0])
+open(manifest, 'w').write('\n'.join([head] + ['\t'.join(r) for r in rows]) + '\n')
+PY
+done
+git add -- "$MANIFEST"

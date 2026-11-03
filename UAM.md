@@ -36,9 +36,18 @@ padrão.
   mecanismo do próprio Chatwoot (`prepend_mod_with` / `include_mod_with`).
 - Os arquivos novos trazidos da fazer.ai mantêm o caminho original, para dar
   para comparar com o fork deles por `git diff`.
-- A ligação no navegador é escrita em **sala limpa**. A referência é só o
-  contrato do conector (`contract/PROTOCOL.md`), a tela MIT e a documentação
-  pública. As fontes usadas ficam registradas no log de sala limpa.
+- A ligação no navegador é escrita sem `enterprise/`. O código de ligação da
+  fazer.ai que fica fora de `enterprise/` é MIT e pode ser reaproveitado
+  (decisão de 2026-11-02). Um log de fontes registra o que foi consultado.
+
+## Origem do código
+
+- Arquivos copiados da fazer.ai entram por `bin/uam-port <caminho>`, byte a
+  byte, a partir da tag `v4.19.0-fazer-ai.141`. Cada um tem uma linha em
+  `uam/ported.tsv` (caminho, tag, blob e as edições `uam:`, se houver).
+- O `NOTICE` traz os avisos de copyright do Chatwoot Inc. e da FAZER.AI LTDA.
+- As specs rodam sem `enterprise/`: `bin/uam-spec` no Docker local e o
+  workflow `uam-spec.yml` no CI.
 
 ## Sincronização
 

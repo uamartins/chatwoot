@@ -37,14 +37,13 @@ module ChatwootApp
     ENV.fetch('HELPCENTER_URL', nil) || ENV.fetch('FRONTEND_URL', nil)
   end
 
+  # uam: só as extensões cujas pastas existem. O oficial devolve %w[enterprise custom] quando
+  # há custom/, e sem enterprise/ o primeiro prepend_mod_with quebra o boot (const_get em false).
   def self.extensions
-    if custom?
-      %w[enterprise custom]
-    elsif enterprise?
-      %w[enterprise]
-    else
-      %w[]
-    end
+    exts = []
+    exts << 'enterprise' if enterprise?
+    exts << 'custom' if custom?
+    exts
   end
 
   def self.advanced_search_allowed?

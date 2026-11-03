@@ -1,0 +1,26 @@
+uamartins/chatwoot
+==================
+
+Este repositório é um fork do Chatwoot (https://github.com/chatwoot/chatwoot).
+
+  Chatwoot
+  Copyright (c) 2017-2026 Chatwoot Inc.
+  Licenciado sob a licença MIT (Expat), exceto o conteúdo do diretório
+  "enterprise/", que segue os termos de "enterprise/LICENSE". O diretório
+  "enterprise/" fica no repositório apenas para facilitar o merge com o
+  oficial: ele nunca entra na imagem publicada (ver .dockerignore e
+  bin/uam-check-image).
+
+Partes deste fork foram copiadas do fork da fazer.ai
+(https://github.com/fazer-ai/chatwoot), sem alteração ou com edições marcadas
+"uam:". Os arquivos e a versão de origem de cada um estão em uam/ported.tsv.
+
+  Chatwoot fazer.ai
+  Copyright (c) 2025-2026 FAZER.AI LTDA
+  Licenciado sob a licença MIT (Expat) para tudo o que fica fora de
+  "enterprise/". Nada do "enterprise/" da fazer.ai foi copiado.
+
+As mudanças próprias deste fork (arquivos e linhas marcados "uam:", a pasta
+"custom/" e os scripts bin/uam-*) seguem a mesma licença MIT.
+
+Texto da licença MIT: ver LICENSE.

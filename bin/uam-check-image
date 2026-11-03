@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-# uam: confere que uma imagem do Chatwoot não leva o código Enterprise.
+# uam: confere uma imagem do Chatwoot do fork.
 # Uso: bin/uam-check-image <imagem>
-# Exit 0 só se /app/enterprise e /app/spec/enterprise não existem e
-# ChatwootApp.enterprise? é falso dentro da imagem.
+# Exit 0 só se:
+#   - /app/enterprise e /app/spec/enterprise não existem e ChatwootApp.enterprise? é falso
+#     (nenhum código Enterprise na imagem);
+#   - /app/custom existe e ChatwootApp.custom? é verdadeiro (os trechos do native estão lá;
+#     sem eles a imagem sobe sem erro e sem WhatsApp nativo).
 set -euo pipefail
 
 if [ $# -ne 1 ]; then
@@ -13,11 +16,14 @@ fi
 if docker run --rm --entrypoint sh "$1" -c '
   test ! -e /app/enterprise || { echo "tem /app/enterprise"; exit 1; }
   test ! -e /app/spec/enterprise || { echo "tem /app/spec/enterprise"; exit 1; }
-  cd /app && ruby -r ./lib/chatwoot_app.rb -e "exit(ChatwootApp.enterprise? ? 1 : 0)" ||
-    { echo "ChatwootApp.enterprise? = true"; exit 1; }
+  test -d /app/custom || { echo "falta /app/custom"; exit 1; }
+  cd /app && ruby -r ./lib/chatwoot_app.rb -e "
+    abort(%q(ChatwootApp.enterprise? = true)) if ChatwootApp.enterprise?
+    abort(%q(ChatwootApp.custom? = false)) unless ChatwootApp.custom?
+  "
 '; then
-  echo "ok: sem enterprise ($1)"
+  echo "ok: sem enterprise, com custom ($1)"
 else
-  echo "FALHOU: $1 leva código Enterprise" >&2
+  echo "FALHOU: $1" >&2
   exit 1
 fi

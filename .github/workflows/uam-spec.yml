@@ -1,0 +1,56 @@
+# uam: specs do fork sem enterprise/ (mesmo esquema do run_foss_spec.yml do oficial, um nó só).
+name: uam spec
+
+on:
+  push:
+    branches: ['uam/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ''
+          POSTGRES_DB: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --mount type=tmpfs,destination=/var/lib/postgresql/data
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:alpine
+        ports: ['6379:6379']
+        options: --entrypoint redis-server
+    env:
+      RAILS_ENV: test
+      POSTGRES_HOST: localhost
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Strip enterprise code
+        run: rm -rf enterprise spec/enterprise
+
+      - name: Rubocop (só o código do fork)
+        run: bundle exec rubocop custom spec/uam lib/chatwoot_app.rb config/application.rb config/environments/test.rb
+
+      - name: Banco
+        run: bundle exec rake db:create db:schema:load
+
+      - name: Specs
+        run: |
+          files=(spec/uam)
+          for list in spec/uam/native_spec_files.txt spec/uam/official_spec_files.txt; do
+            [ -f "$list" ] && while IFS= read -r l; do [ -n "$l" ] && [ "${l#\#}" = "$l" ] && files+=("$l"); done < "$list"
+          done
+          bundle exec rspec --format progress "${files[@]}"

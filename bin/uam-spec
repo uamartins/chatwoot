@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# uam: roda specs do fork sem enterprise/ e sem spec/enterprise/, como o CI CE do oficial.
+#
+#   bin/uam-spec [arquivo|dir|@lista ...]   rspec (sem argumentos: spec/uam)
+#   bin/uam-spec --sh '<comandos>'          shell no container, com Postgres e Redis no ar
+#   bin/uam-spec --rails <args>             atalho para --sh 'bin/rails <args>'
+#
+# A árvore vem de `git ls-files --cached --others --exclude-standard` (pega os arquivos
+# recém-portados, que ainda não estão no índice). O banco nasce vazio a cada chamada
+# (tmpfs) e recebe db:create + db:schema:load antes do rspec. No modo --sh, nada é
+# carregado: os comandos decidem. Se o db/schema.rb mudar lá dentro, ele volta ao clone.
+set -euo pipefail
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+COMPOSE=(docker compose -f "$ROOT/docker/uam-spec/compose.yml")
+OUT=$(mktemp -d)
+# Sem -v: o volume bundle guarda as gems entre as execuções (o Postgres é tmpfs).
+trap 'rm -rf "$OUT"; "${COMPOSE[@]}" down --remove-orphans >/dev/null 2>&1 || true' EXIT
+
+mode=rspec
+case "${1:-}" in
+  --sh) mode=sh; shift; script=$1 ;;
+  --rails) mode=sh; shift; script="bin/rails $*" ;;
+esac
+
+if [ "$mode" = rspec ]; then
+  args=()
+  [ $# -eq 0 ] && set -- spec/uam
+  for a in "$@"; do
+    if [ "${a#@}" != "$a" ]; then
+      while IFS= read -r l; do [ -n "$l" ] && [ "${l#\#}" = "$l" ] && args+=("$l"); done < "$ROOT/${a#@}"
+    else
+      args+=("$a")
+    fi
+  done
+  q=$(printf '%q ' "${args[@]}")
+  script="bin/rails db:create db:schema:load >/dev/null && bundle exec rspec $q"
+fi
+
+cd "$ROOT"
+git ls-files -z --cached --others --exclude-standard |
+  python3 -c '
+import os, sys
+for p in sys.stdin.buffer.read().split(b"\0"):
+    if p and not p.startswith((b"enterprise/", b"spec/enterprise/")) and os.path.lexists(p):
+        sys.stdout.buffer.write(p + b"\0")' |
+  COPYFILE_DISABLE=1 tar --no-xattrs --no-mac-metadata --null -T - -cf - |
+  "${COMPOSE[@]}" run --rm -T --no-deps app sh -c 'find /src -mindepth 1 -delete && tar -xf - -C /src'
+
+"${COMPOSE[@]}" up -d --wait postgres redis >/dev/null 2>&1
+set +e
+"${COMPOSE[@]}" run --rm -T -v "$OUT:/out" app bash -c "
+  (bundle check >/dev/null || bundle install --quiet) >&2 &&
+  cp db/schema.rb /out/schema.before && { $script; }; rc=\$?
+  cp db/schema.rb /out/schema.after; exit \$rc"
+rc=$?
+set -e
+if [ -f "$OUT/schema.after" ] && ! cmp -s "$OUT/schema.before" "$OUT/schema.after"; then
+  cp "$OUT/schema.after" "$ROOT/db/schema.rb"
+  echo "uam-spec: db/schema.rb atualizado no clone" >&2
+fi
+exit $rc
