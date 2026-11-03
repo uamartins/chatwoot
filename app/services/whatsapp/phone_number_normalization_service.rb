@@ -77,3 +77,6 @@ class Whatsapp::PhoneNumberNormalizationService
     Whatsapp::PhoneNormalizers::MexicoPhoneNormalizer
   ].freeze
 end
+
+# uam: trechos do WhatsApp native em custom/ (Custom::Whatsapp::PhoneNumberNormalizationService).
+Whatsapp::PhoneNumberNormalizationService.prepend_mod_with('Whatsapp::PhoneNumberNormalizationService')

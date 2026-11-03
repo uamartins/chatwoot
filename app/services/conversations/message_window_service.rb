@@ -68,3 +68,6 @@ class Conversations::MessageWindowService
     @last_incoming_message ||= @conversation.messages.where(account_id: @conversation.account_id).incoming&.last
   end
 end
+
+# uam: trechos do WhatsApp native em custom/ (Custom::Conversations::MessageWindowService).
+Conversations::MessageWindowService.prepend_mod_with('Conversations::MessageWindowService')

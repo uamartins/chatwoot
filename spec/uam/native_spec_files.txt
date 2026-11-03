@@ -3,13 +3,12 @@ spec/controllers/api/v1/accounts/whatsapp/session_providers_controller_spec.rb
 spec/jobs/contacts/sync_group_job_spec.rb
 spec/jobs/messages/delete_on_channel_job_spec.rb
 spec/jobs/migration/whatsapp_connector_topology_job_spec.rb
-spec/jobs/webhooks/whatsapp_session_events_job_spec.rb
-spec/jobs/whatsapp/session/connection_check_job_spec.rb
+# fora da F2 (conferência por REST do uazapi, com fixtures uazapi): spec/jobs/whatsapp/session/connection_check_job_spec.rb
 spec/jobs/whatsapp/session/conversation_history_job_spec.rb
 spec/jobs/whatsapp/session/deferred_event_job_spec.rb
 spec/jobs/whatsapp/session/logout_job_spec.rb
 spec/jobs/whatsapp/session/media_fetch_job_spec.rb
-spec/jobs/whatsapp/session/pairing_poll_job_spec.rb
+# fora da F2 (polling REST do uazapi; o native recebe o estado por push): spec/jobs/whatsapp/session/pairing_poll_job_spec.rb
 spec/jobs/whatsapp/session/teardown_retry_job_spec.rb
 spec/jobs/whatsapp/session/update_contact_avatar_job_spec.rb
 spec/jobs/whatsapp/session/update_group_avatar_job_spec.rb
@@ -34,13 +33,13 @@ spec/services/whatsapp/session/errors_spec.rb
 spec/services/whatsapp/session/facade/calls_spec.rb
 spec/services/whatsapp/session/facade_spec.rb
 spec/services/whatsapp/session/groups/syncer_spec.rb
-spec/services/whatsapp/session/inbound/announced_body_automations_spec.rb
+# fora da F2 (gatilhos de automação para corpo editado/recuperado, recurso da fazer.ai não portado): spec/services/whatsapp/session/inbound/announced_body_automations_spec.rb
 spec/services/whatsapp/session/inbound/contact_lookup_spec.rb
 spec/services/whatsapp/session/inbound/contact_resolver_spec.rb
 spec/services/whatsapp/session/inbound/coverage_spec.rb
 spec/services/whatsapp/session/inbound/dispatcher_spec.rb
 spec/services/whatsapp/session/inbound/echo_matcher_spec.rb
-spec/services/whatsapp/session/inbound/edited_content_automations_spec.rb
+# fora da F2 (gatilhos de automação para corpo editado/recuperado, recurso da fazer.ai não portado): spec/services/whatsapp/session/inbound/edited_content_automations_spec.rb
 spec/services/whatsapp/session/inbound/group_resolver_spec.rb
 spec/services/whatsapp/session/inbound/handlers/call_offer_spec.rb
 spec/services/whatsapp/session/inbound/handlers/command_failed_spec.rb
@@ -62,8 +61,8 @@ spec/services/whatsapp/session/inbound/handlers/message_revoked_spec.rb
 spec/services/whatsapp/session/inbound/handlers/presence_spec.rb
 spec/services/whatsapp/session/inbound/import_slots_spec.rb
 spec/services/whatsapp/session/inbound/locks_spec.rb
-spec/services/whatsapp/session/inbound/recovered_content_automations_spec.rb
-spec/services/whatsapp/session/inbound/recovery_after_refused_edit_spec.rb
+# fora da F2 (gatilhos de automação para corpo editado/recuperado, recurso da fazer.ai não portado): spec/services/whatsapp/session/inbound/recovered_content_automations_spec.rb
+# fora da F2 (gatilhos de automação para corpo editado/recuperado, recurso da fazer.ai não portado): spec/services/whatsapp/session/inbound/recovery_after_refused_edit_spec.rb
 spec/services/whatsapp/session/inbound/status_transition_spec.rb
 spec/services/whatsapp/session/model/address_spec.rb
 spec/services/whatsapp/session/model/content_spec.rb
@@ -78,3 +77,4 @@ spec/services/whatsapp/session/owner_spec.rb
 spec/services/whatsapp/session/phone_match_spec.rb
 spec/services/whatsapp/session/registry_spec.rb
 spec/services/whatsapp/session/teardown_retry_spec.rb
+spec/models/concerns/json_column_merge_spec.rb

@@ -77,3 +77,6 @@ class Whatsapp::SendOnWhatsappService < Base::SendOnChannelService
     end
   end
 end
+
+# uam: trechos do WhatsApp native em custom/ (Custom::Whatsapp::SendOnWhatsappService).
+Whatsapp::SendOnWhatsappService.prepend_mod_with('Whatsapp::SendOnWhatsappService')

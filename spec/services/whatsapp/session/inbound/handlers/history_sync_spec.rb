@@ -12,8 +12,9 @@ RSpec.describe Whatsapp::Session::Inbound::Handlers::HistorySync do
   after { Redis::Alfred.delete(Whatsapp::Session::Inbound::ImportSlots::KEY) }
 
   let(:channel) do
-    create(:channel_whatsapp, provider: 'uazapi', validate_provider_config: false, sync_templates: false,
-                              provider_config: { 'base_url' => 'https://uazapi.test', 'token' => 'x', 'history_sync' => true })
+    # uam: native no lugar do uazapi (o fork não traz o uazapi; o handler é o mesmo).
+    create(:channel_whatsapp, provider: 'native', validate_provider_config: false, sync_templates: false,
+                              provider_config: { 'history_sync' => true })
   end
   let(:inbox) { channel.inbox }
   let(:model) { Whatsapp::Session::Model }

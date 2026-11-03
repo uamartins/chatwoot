@@ -54,3 +54,6 @@ class Base::SendOnChannelService
     raise 'Invalid channel service was called' if inbox.channel.class != channel_class
   end
 end
+
+# uam: trechos do WhatsApp native em custom/ (Custom::Base::SendOnChannelService).
+Base::SendOnChannelService.prepend_mod_with('Base::SendOnChannelService')

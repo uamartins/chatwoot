@@ -226,3 +226,6 @@ class Attachment < ApplicationRecord
 end
 
 Attachment.include_mod_with('Concerns::Attachment')
+
+# uam: nota de voz do WhatsApp native em custom/ (Custom::Attachment).
+Attachment.prepend_mod_with('Attachment')

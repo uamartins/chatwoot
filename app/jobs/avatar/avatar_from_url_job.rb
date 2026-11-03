@@ -111,3 +111,6 @@ class Avatar::AvatarFromUrlJob < ApplicationJob
     true
   end
 end
+
+# uam: trechos do WhatsApp native em custom/ (Custom::Avatar::AvatarFromUrlJob).
+Avatar::AvatarFromUrlJob.prepend_mod_with('Avatar::AvatarFromUrlJob')

@@ -8,6 +8,9 @@ module Custom::Concerns::Contact
   extend ActiveSupport::Concern
 
   included do
+    # Mescla em colunas JSON sob lock (consolidação de contatos e sincronização de grupos).
+    include JsonColumnMerge
+
     has_many :group_memberships, class_name: 'GroupMember', foreign_key: :group_contact_id, dependent: :destroy,
                                  inverse_of: :group_contact
     has_many :group_member_contacts, through: :group_memberships, source: :contact

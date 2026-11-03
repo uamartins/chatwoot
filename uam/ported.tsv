@@ -3,7 +3,6 @@ app/controllers/api/v1/accounts/whatsapp/session_providers_controller.rb	v4.19.0
 app/jobs/contacts/sync_group_job.rb	v4.19.0-fazer-ai.141	ab022c1da455da76239a6e5039aa222a9664efd7	-
 app/jobs/messages/delete_on_channel_job.rb	v4.19.0-fazer-ai.141	7cac1149f95393e5dad030c345e93e8bc9bebe18	-
 app/jobs/migration/whatsapp_connector_topology_job.rb	v4.19.0-fazer-ai.141	4a45ece25d3da351f3cdb787116411f33520abf9	-
-app/jobs/webhooks/whatsapp_session_events_job.rb	v4.19.0-fazer-ai.141	5aa4db0a550e45fab656a1abe7a8cc58fdda204a	-
 app/jobs/whatsapp/session/apply_proxy_job.rb	v4.19.0-fazer-ai.141	87dbf48a14c9c96a32b8ae255f58aa27fa28da15	-
 app/jobs/whatsapp/session/connection_check_job.rb	v4.19.0-fazer-ai.141	c0b71e10be08d7aa25730d301f09a722524256ad	-
 app/jobs/whatsapp/session/connection_check_scheduler_job.rb	v4.19.0-fazer-ai.141	81b5352154c44e8fe048fdf3d0056c8355691345	-
@@ -17,6 +16,7 @@ app/jobs/whatsapp/session/teardown_retry_job.rb	v4.19.0-fazer-ai.141	f1bcfb79541
 app/jobs/whatsapp/session/update_contact_avatar_job.rb	v4.19.0-fazer-ai.141	51cbfaa6ffa6a01541ddbe73e537b9ff5be0fb8f	-
 app/jobs/whatsapp/session/update_group_avatar_job.rb	v4.19.0-fazer-ai.141	98dfed859ff78e7e4674ec8f6de374ec5024e0de	-
 app/models/concerns/group_conversation_handler.rb	v4.19.0-fazer-ai.141	552e23595569ddddb7112d68dfcf7a0bac040b91	-
+app/models/concerns/json_column_merge.rb	v4.19.0-fazer-ai.141	195c7659db6c455e865f17663143b05a220bc501	-
 app/models/group_member.rb	v4.19.0-fazer-ai.141	a2cedbb134f16feb2bfc3bcab4beeb29a96d3ea8	-
 app/services/contacts/sync_group_service.rb	v4.19.0-fazer-ai.141	a6e99e94a0a9459882bf2365fd466083d66f2669	-
 app/services/import.rb	v4.19.0-fazer-ai.141	d79dde8e6bcd7c3616b018f9b929d6b57c11fd25	-
@@ -123,6 +123,7 @@ app/services/whatsapp/session/teardown_retry.rb	v4.19.0-fazer-ai.141	683226bd535
 config/initializers/import_guards.rb	v4.19.0-fazer-ai.141	41d123b01968665d7d085100a1830aff1da0e80c	sem SilentScheduledMessages
 config/initializers/whatsapp_connector.rb	v4.19.0-fazer-ai.141	a3bc8cd345a567eb789fe0065973e5365825de74	-
 config/locales/fazer_ai.en.yml	v4.19.0-fazer-ai.141	1462f16e5cee01c3299359f41aee1af09df76c7c	-
+config/locales/fazer_ai.es.yml	v4.19.0-fazer-ai.141	f16a494b5c57986457ffa2157fd5a8bb95e49931	-
 config/locales/fazer_ai.pt_BR.yml	v4.19.0-fazer-ai.141	f995ca47ee80080046124ee6b9247765297b5102	-
 db/migrate/20250314185939_add_provider_connection_to_whatsapp.rb	v4.19.0-fazer-ai.141	95f32b41dab83d99d59cd04211d4a891f032edbd	-
 db/migrate/20250726142410_add_whatsapp_channel_provider_index.rb	v4.19.0-fazer-ai.141	f06c9caeffe8b3b04053edadbe02b206fc3c0baa	-
@@ -256,7 +257,6 @@ spec/fixtures/whatsapp/session/contract/schema/protocol.schema.json	v4.19.0-faze
 spec/jobs/contacts/sync_group_job_spec.rb	v4.19.0-fazer-ai.141	43dd58a142ddaa48289749ca1a3cb521b06163f1	-
 spec/jobs/messages/delete_on_channel_job_spec.rb	v4.19.0-fazer-ai.141	385051586126c4d0ec1f7fe4dbb110a5e5e267a9	-
 spec/jobs/migration/whatsapp_connector_topology_job_spec.rb	v4.19.0-fazer-ai.141	b259c967489d5191f8e712664ee53cf7b4c87a79	-
-spec/jobs/webhooks/whatsapp_session_events_job_spec.rb	v4.19.0-fazer-ai.141	312e9f4346562f60931c5bc1fbbe305f834defb7	-
 spec/jobs/whatsapp/session/connection_check_job_spec.rb	v4.19.0-fazer-ai.141	3e17be0ca2d8167bc0c5f8a89346b9dcb6711e12	-
 spec/jobs/whatsapp/session/conversation_history_job_spec.rb	v4.19.0-fazer-ai.141	72f1e34b76e922dd4e9148c9451a8af03eaec8c2	-
 spec/jobs/whatsapp/session/deferred_event_job_spec.rb	v4.19.0-fazer-ai.141	5a233244afe3d77ee54039b5c33136bc191e9c3f	-
@@ -267,6 +267,7 @@ spec/jobs/whatsapp/session/teardown_retry_job_spec.rb	v4.19.0-fazer-ai.141	b20f8
 spec/jobs/whatsapp/session/update_contact_avatar_job_spec.rb	v4.19.0-fazer-ai.141	b5cf552e09c8c24b3fa63881ef505f851f32be63	-
 spec/jobs/whatsapp/session/update_group_avatar_job_spec.rb	v4.19.0-fazer-ai.141	eae10f416a5342761d4e6d0dcc3b59817bcb8192	-
 spec/lib/whatsapp/session_contract_spec.rb	v4.19.0-fazer-ai.141	29fdd5b3cb93ff74efe70210c50d83b193dcd9a0	-
+spec/models/concerns/json_column_merge_spec.rb	v4.19.0-fazer-ai.141	746aa19f53e27a2ff49e9e23fdb4a35b5f558db4	-
 spec/services/contacts/sync_group_service_spec.rb	v4.19.0-fazer-ai.141	12b6998d605cb75a8c8ad1ee0840c40aefc4c6d8	-
 spec/services/import/history_settlement_spec.rb	v4.19.0-fazer-ai.141	0b6cf68a0e567b9ddecf2da0e3c7223394a60870	-
 spec/services/import/silent_write_spec.rb	v4.19.0-fazer-ai.141	4858284cf101ff160b82f77eacddc91028c37c9e	-

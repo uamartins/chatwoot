@@ -39,3 +39,6 @@ class SendReplyJob < ApplicationJob
     end
   end
 end
+
+# uam: trechos do WhatsApp native em custom/ (Custom::SendReplyJob).
+SendReplyJob.prepend_mod_with('SendReplyJob')

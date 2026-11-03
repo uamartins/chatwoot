@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Whatsapp::Session::ConnectionStateWriter do
   subject(:writer) { described_class.new(channel) }
 
-  let(:channel) { create(:channel_whatsapp, provider: 'baileys', validate_provider_config: false, sync_templates: false) }
+  # uam: native no lugar do baileys (o fork não traz o Baileys; o writer é o mesmo).
+  let(:channel) { create(:channel_whatsapp, provider: 'native', validate_provider_config: false, sync_templates: false) }
   let(:state) { Whatsapp::Session::Model::ConnectionState }
 
   it 'writes the state and broadcasts it' do
@@ -133,7 +134,8 @@ RSpec.describe Whatsapp::Session::ConnectionStateWriter do
     end
 
     it 'writes when the inbox is still on the provider the caller was built for' do
-      expect(writer.apply(state.new(connection: 'connecting'), provider: 'baileys')).to eq(:written)
+      # uam: native no lugar do baileys, o provedor do canal deste arquivo.
+      expect(writer.apply(state.new(connection: 'connecting'), provider: 'native')).to eq(:written)
     end
   end
 

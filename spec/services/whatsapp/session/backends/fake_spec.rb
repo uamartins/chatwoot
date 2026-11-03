@@ -3,7 +3,8 @@ require 'rails_helper'
 RSpec.describe Whatsapp::Session::Backends::Fake do
   subject(:backend) { described_class.new(channel) }
 
-  let(:channel) { create(:channel_whatsapp, provider: 'baileys', validate_provider_config: false, sync_templates: false) }
+  # uam: native no lugar do baileys (o fork não traz o Baileys; o backend Fake é genérico).
+  let(:channel) { create(:channel_whatsapp, provider: 'native', validate_provider_config: false, sync_templates: false) }
 
   it_behaves_like 'a whatsapp session backend'
 

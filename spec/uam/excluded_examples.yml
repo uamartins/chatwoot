@@ -1,0 +1,183 @@
+# uam: exemplos portados da fazer.ai que ficam pendentes no fork, com o motivo.
+# Chave: arquivo; cada item: a descrição completa do exemplo (como o rspec imprime) e o motivo.
+spec/controllers/api/v1/accounts/whatsapp/session_providers_controller_spec.rb:
+- example: WhatsApp Session Providers API GET /api/v1/accounts/{account.id}/whatsapp/session_providers when it is an administrator describes every session provider and no cloud one
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: WhatsApp Session Providers API GET /api/v1/accounts/{account.id}/whatsapp/session_providers when it is an administrator carries the form and the capabilities the dashboard renders from
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: WhatsApp Session Providers API GET /api/v1/accounts/{account.id}/whatsapp/session_providers when it is an administrator tells the form which fields go behind the advanced options
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: WhatsApp Session Providers API GET /api/v1/accounts/{account.id}/whatsapp/session_providers when it is an administrator tells the picker which providers are still in beta
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: WhatsApp Session Providers API GET /api/v1/accounts/{account.id}/whatsapp/session_providers when it is an administrator marks a provider creatable until the account turns it off
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/jobs/contacts/sync_group_job_spec.rb:
+- example: Contacts::SyncGroupJob#perform rescues ProviderUnavailableError without re-raising
+  reason: usa o serviço do Baileys, que o fork não traz
+spec/jobs/messages/delete_on_channel_job_spec.rb:
+- example: Messages::DeleteOnChannelJob enqueues the job on the high queue
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Messages::DeleteOnChannelJob deletes the message on the channel
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Messages::DeleteOnChannelJob does nothing when the message no longer exists
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Messages::DeleteOnChannelJob does nothing when the message has no source_id
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Messages::DeleteOnChannelJob does nothing when the channel does not support deletion
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Messages::DeleteOnChannelJob retries when the provider fails, so a hiccup does not leave the message alive on WhatsApp
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/jobs/whatsapp/session/conversation_history_job_spec.rb:
+- example: Whatsapp::Session::ConversationHistoryJob asks the provider for the history behind this thread
+  reason: usa o serviço do Baileys, que o fork não traz
+- example: Whatsapp::Session::ConversationHistoryJob files nothing on an inbox whose provider cannot fetch history
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ConversationHistoryJob swallows a provider that refuses the request
+  reason: usa o serviço do Baileys, que o fork não traz
+spec/jobs/whatsapp/session/media_fetch_job_spec.rb:
+- example: Whatsapp::Session::MediaFetchJob still fetches a portable ref after a conversion inside the family
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/contacts/sync_group_service_spec.rb:
+- example: Contacts::SyncGroupService#perform takes the conversation from the supplied channel inbox, not the first one
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Contacts::SyncGroupService#perform calls channel.sync_group with a conversation
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Contacts::SyncGroupService#perform dispatches contact_group_synced event
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Contacts::SyncGroupService#perform leaves a legacy provider to its own service
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/avatar_sync_spec.rb:
+- example: Whatsapp::Session::AvatarSync is the only place that skips validations to write this column
+  reason: 'teste estrutural de arquivos: no fork quem grava as marcas sob lock é custom/ (Contact) e o job oficial mantém o update_columns antigo, sobrescrito pelo Custom::Avatar::AvatarFromUrlJob'
+spec/services/whatsapp/session/channel_extension_spec.rb:
+- example: Whatsapp::Session::ChannelExtension#session_provider? covers only the providers this layer serves
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension#session_capabilities answers for every whatsapp provider, not only the served ones
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension#supports_reactions? leaves the legacy and cloud providers untouched
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension validation reports the invalid config keys the backend rejected
+  reason: validação de config do uazapi pelo backend dele; no fork um provedor desconhecido cai no 360dialog
+- example: Whatsapp::Session::ChannelExtension validation leaves an existing inbox on a frozen provider saveable after the switch is thrown
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension validation accepts a config the backend approves
+  reason: validação de config do uazapi pelo backend dele; no fork um provedor desconhecido cai no 360dialog
+- example: Whatsapp::Session::ChannelExtension validation refuses a session provider that was turned off for the account
+  reason: chave por conta do uazapi; o fork só traz a do native
+- example: Whatsapp::Session::ChannelExtension validation refuses converting an existing inbox to a provider that was turned off for the account
+  reason: chave por conta do uazapi; o fork só traz a do native
+- example: Whatsapp::Session::ChannelExtension validation keeps an existing session inbox saveable after the toggle is turned back off
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension connection payload stores the error already resolved, not as the key the wire carried
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension connection payload exposes the pairing details to an administrator
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension connection payload answers the same for the live push as for the inbox payload
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension connection payload leaves the legacy providers presenting exactly what they did
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension webhook secret generates one for a session provider, which is what authenticates its callback
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension webhook secret still generates one for whatsapp_cloud and baileys, and none for 360dialog
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension webhook secret keeps the stored one when an update leaves the key out
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension the teardown of a destroyed inbox releases the webhook even when the provider will not disconnect
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension the teardown of a destroyed inbox lets an explicit disconnect fail, and keeps the webhook when it does
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension an inbox pointed at another instance stops reporting the session the instance it left was holding
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension an inbox pointed at another instance withdraws the registration from the instance it left
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension an inbox pointed at another instance leaves the session alone when the save did not move the instance
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension an inbox pointed at another instance is not moved by an address that differs only in a trailing slash
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension session id generates one for a session provider and none for the others
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::ChannelExtension session id mints a new one when the inbox moves to another provider, and again when it comes back
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/connection_state_writer_spec.rb:
+- example: Whatsapp::Session::ConnectionStateWriter keeps the sticky account limits across a state change
+  reason: limites de conta (reachout_time_lock/new_chat_cap) são do Baileys; o native não declara account_limits
+spec/services/whatsapp/session/errors_spec.rb:
+- example: Whatsapp::Session::Errors is what the legacy providers raise, so callers rescue a single namespace
+  reason: usa o serviço do Baileys, que o fork não traz
+spec/services/whatsapp/session/inbound/coverage_spec.rb:
+- example: Whatsapp::Session::Inbound::Coverage.watermark is nil for an inbox that never stored a provider message
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Coverage.watermark is the newest message that came from the provider
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Coverage.watermark ignores rows that did not come from the provider
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Coverage.watermark ignores rows an import filed after the fact
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/inbound/dispatcher_spec.rb:
+- example: Whatsapp::Session::Inbound::Dispatcher drops an event authenticated for an instance the inbox has left
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/inbound/handlers/command_failed_spec.rb:
+- example: Whatsapp::Session::Inbound::Handlers::CommandFailed when the inbox belongs to a provider other than the connector leaves it alone, because the connector is the only one that sends this answer
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/inbound/handlers/connection_state_spec.rb:
+- example: Whatsapp::Session::Inbound::Handlers::ConnectionState refuses a state whose instance the inbox left while the event was in flight
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/inbound/handlers/history_sync_spec.rb:
+- example: Whatsapp::Session::Inbound::Handlers::HistorySync files nothing once the inbox points at another instance
+  reason: troca de instância pelo token do uazapi; o native não tem instância por token
+spec/services/whatsapp/session/inbound/handlers/message_received_inline_media_spec.rb:
+- example: Whatsapp::Session::Inbound::Handlers::MessageReceived stores the message with its file, so message_created already carries it
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Handlers::MessageReceived marks a voice note as recorded audio
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Handlers::MessageReceived stores the message without the file and leaves it to the fetch job when the download fails
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Handlers::MessageReceived stops waiting on a download that does not answer in time
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Handlers::MessageReceived asks nothing for media whose bytes did not come with it
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Inbound::Handlers::MessageReceived leaves an imported message to the fetch job
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/inbound/import_slots_spec.rb:
+- example: Whatsapp::Session::Inbound::ImportSlots is a queue no Sidekiq process reads
+  reason: usa o serviço do Baileys, que o fork não traz
+spec/services/whatsapp/session/outbound/attachment_adapter_spec.rb:
+- example: Whatsapp::Session::Outbound::AttachmentAdapter the address the provider is told to fetch from leaves a hosted provider on the public host even where an internal one is set
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/owner_spec.rb:
+- example: Whatsapp::Session::Owner.group_member finds the connected account when the roster only knows its LID
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Owner.group_member finds it under the other ninth-digit form of the configured number
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Owner.group_member is nobody when the roster holds neither identity
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Owner.group_member is nobody without a channel to be
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+spec/services/whatsapp/session/registry_spec.rb:
+- example: Whatsapp::Session::Registry serves only the new session providers
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Registry credits the cloud provider with the typing and read-receipt calls it implements
+  reason: a Cloud da fazer.ai com typing/recibos; o oficial não tem esses métodos na Cloud
+- example: Whatsapp::Session::Registry marks the new session providers as beta and nothing else
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Registry declares history on native, with the setting that decides the archive
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Registry refuses to build a backend for a provider it does not serve
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Registry.capabilities_for drops the group capabilities when the instance turned groups off
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Registry.capabilities_for keeps them when groups are enabled
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Registry.capabilities_for is the same answer the legacy service gives
+  reason: usa o serviço do Baileys, que o fork não traz
+spec/support/whatsapp/session/backend_shared_examples.rb:
+- example: Whatsapp::Session::Backends::Fake behaves like a whatsapp session backend the session lifecycle returns a connection state when connecting
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Backends::Fake behaves like a whatsapp session backend the session lifecycle pairs in every mode it declares
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Backends::Fake behaves like a whatsapp session backend the session lifecycle reports the connection state
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Backends::Fake behaves like a whatsapp session backend sending returns the provider id of the sent message
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz
+- example: Whatsapp::Session::Backends::Fake behaves like a whatsapp session backend sending echoes back the reserved id when it accepts a caller-supplied one
+  reason: cenário com provedor uazapi/Baileys/Z-API, que o fork não traz

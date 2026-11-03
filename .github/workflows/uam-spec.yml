@@ -42,7 +42,7 @@ jobs:
         run: rm -rf enterprise spec/enterprise
 
       - name: Rubocop (só o código do fork)
-        run: bundle exec rubocop custom spec/uam lib/chatwoot_app.rb config/application.rb config/environments/test.rb
+        run: bundle exec rubocop custom spec/uam spec/support/uam_excluded_examples.rb lib/chatwoot_app.rb config/application.rb config/environments/test.rb lib/events/types.rb lib/redis/redis_keys.rb lib/regex_helper.rb
 
       - name: Banco
         run: bundle exec rake db:create db:schema:load

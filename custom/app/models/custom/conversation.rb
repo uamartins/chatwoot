@@ -6,6 +6,7 @@
 # atualizada (a marca de número sem WhatsApp avisa a tela por ele).
 module Custom::Conversation
   def self.prepended(base)
+    base.include JsonColumnMerge
     base.enum group_type: { individual: 0, group: 1 }, _prefix: true
   end
 

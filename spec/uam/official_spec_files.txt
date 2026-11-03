@@ -1,3 +1,17 @@
 # uam: specs do oficial que tocam o que o fork muda; rodam no CI (uam-spec.yml).
 spec/models/channel/whatsapp_spec.rb
 spec/models/message_spec.rb
+spec/jobs/send_reply_job_spec.rb
+spec/jobs/trigger_scheduled_items_job_spec.rb
+spec/jobs/avatar/avatar_from_url_job_spec.rb
+spec/listeners/action_cable_listener_spec.rb
+spec/models/conversation_spec.rb
+spec/models/contact_inbox_spec.rb
+spec/models/contact_spec.rb
+spec/builders/contact_inbox_builder_spec.rb
+spec/builders/contact_inbox_with_contact_builder_spec.rb
+spec/services/whatsapp/send_on_whatsapp_service_spec.rb
+spec/services/conversations/message_window_service_spec.rb
+spec/models/attachment_spec.rb
+spec/models/account_spec.rb
+spec/services/whatsapp/phone_number_normalization_service_spec.rb
