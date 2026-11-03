@@ -81,6 +81,10 @@ RSpec.configure do |config|
   config.include ActionCable::TestHelper
   config.include ActiveJob::TestHelper
 
+  # uam: como na fazer.ai. Current vive na thread pelo processo inteiro; o que um exemplo
+  # deixa ali é lido pelo próximo, quase sempre como um registro que o rollback já apagou.
+  config.before { Current.reset }
+
   # OpenAPI response validation via Skooma
   path_to_openapi = Rails.root.join('swagger/swagger.json')
   config.include Skooma::RSpec[path_to_openapi], type: :request

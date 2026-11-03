@@ -3,8 +3,19 @@ default: &default
   encoding: unicode
   host: <%= ENV.fetch('POSTGRES_HOST', 'localhost') %>
   port: <%= ENV.fetch('POSTGRES_PORT', '5432') %>
-   # ref: https://github.com/mperham/sidekiq/issues/2985#issuecomment-531097962
-  pool: <%= Sidekiq.server? ? ENV.fetch('SIDEKIQ_CONCURRENCY', 10) : ENV.fetch('RAILS_MAX_THREADS', 5) %>
+<%
+  # ref: https://github.com/mperham/sidekiq/issues/2985#issuecomment-531097962
+  pool_size = Sidekiq.server? ? ENV.fetch('SIDEKIQ_CONCURRENCY', 10).to_i : ENV.fetch('RAILS_MAX_THREADS', 5).to_i
+  # uam: como na fazer.ai. O consumer do conector WhatsApp roda uma thread por shard,
+  # fora das threads do Sidekiq, e todas escrevem no banco. Sem essa folga elas esperam
+  # conexão e estouram ActiveRecord::ConnectionTimeoutError. O pool só abre conexões sob
+  # demanda, então a folga não custa nada a um processo que não roda o consumer.
+  if ENV.fetch('WHATSAPP_CONNECTOR_ENABLED', 'true') != 'false' &&
+     ENV.fetch('WHATSAPP_CONNECTOR_CONSUMER', 'sidekiq') != 'off'
+    pool_size += ENV.fetch('WHATSAPP_CONNECTOR_EVENT_SHARDS', 16).to_i
+  end
+%>
+  pool: <%= pool_size %>
   # frequency in seconds to periodically run the Reaper, which attempts
   # to find and recover connections from dead threads
   reaping_frequency: <%= ENV.fetch('DB_POOL_REAPING_FREQUENCY', 30) %>

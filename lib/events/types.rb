@@ -64,4 +64,14 @@ module Events::Types
   # copilot events
   COPILOT_MESSAGE_CREATED = 'copilot.message.created'
   COPILOT_MESSAGE_UPDATED = 'copilot.message.updated'
+
+  # uam: eventos da integração native (mesmos nomes e valores da fazer.ai).
+  PROVIDER_EVENT_RECEIVED = 'provider.event_received'
+  CONVERSATION_RECORDING = 'conversation.recording'
+  # O corpo de uma mensagem guardada antes de poder ser lida, chegando na linha em que foi guardada.
+  MESSAGE_RECOVERED = 'message.recovered'
+  # O corpo de uma mensagem trocado por outro que o remetente escreveu no lugar.
+  MESSAGE_EDITED = 'message.edited'
+  CONTACT_GROUP_SYNCED = 'contact.group_synced'
+  INBOX_PROVIDER_CONNECTION_UPDATED = 'inbox.provider_connection_updated'
 end

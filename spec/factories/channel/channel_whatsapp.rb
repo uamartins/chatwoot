@@ -89,13 +89,20 @@ FactoryBot.define do
     transient do
       sync_templates { true }
       validate_provider_config { true }
+      # uam: transiente da fazer.ai para as specs do native (pula o received_messages).
+      received_messages { true }
     end
 
     before(:create) do |channel_whatsapp, options|
       # since factory already has the required message templates, we just need to bypass it getting updated
       channel_whatsapp.define_singleton_method(:sync_templates) { nil } unless options.sync_templates
       channel_whatsapp.define_singleton_method(:validate_provider_config) { nil } unless options.validate_provider_config
-      if channel_whatsapp.provider == 'whatsapp_cloud'
+      # uam: trechos da fazer.ai para o native (sem baileys e uazapi).
+      channel_whatsapp.define_singleton_method(:received_messages) { |_, _| nil } unless options.received_messages
+      if channel_whatsapp.provider.in?(Whatsapp::Session::PROVIDERS)
+        # Session providers carry their own config; the cloud defaults above are noise for them.
+        channel_whatsapp.provider_config = { 'mark_as_read' => true }.merge(channel_whatsapp.provider_config.except('api_key', 'phone_number_id'))
+      elsif channel_whatsapp.provider == 'whatsapp_cloud'
         # Add 'source' => 'embedded_signup' to skip after_commit :setup_webhooks callback in tests
         # The callback is for manual setup flow; embedded signup handles webhook setup explicitly
         # Only set source if not already provided (allows tests to override)

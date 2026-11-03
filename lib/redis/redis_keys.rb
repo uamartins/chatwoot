@@ -125,4 +125,15 @@ module Redis::RedisKeys
   CAPTAIN_EMAIL_VERIFICATION_EMAIL_SENDS = 'CAPTAIN::EMAIL_VERIFICATION::EMAIL_SENDS::%<email_digest>s'.freeze
   # Email address verified in the conversation
   CAPTAIN_EMAIL_VERIFICATION_VERIFIED = 'CAPTAIN::EMAIL_VERIFICATION::VERIFIED::%<conversation_id>d'.freeze
+
+  # uam: chaves da integração native (mesmos nomes e formatos da fazer.ai).
+  # Os comandos de ligação do conector que não respondem nada, por id, enquanto uma falha ainda pode voltar.
+  WHATSAPP_CONNECTOR_CALL_COMMAND = 'WHATSAPP_CONNECTOR_CALL_COMMAND::%<command_id>s'.freeze
+  # Uma caixa native cuja ligação foi ligada ou desligada enquanto o pareamento ainda estava em curso.
+  WHATSAPP_CONNECTOR_CALL_POLICY_PENDING = 'WHATSAPP_CONNECTOR_CALL_POLICY_PENDING::%<channel_id>s'.freeze
+  # Uma caixa native discando para este número pelo Chatwoot, enquanto o call.start está em curso.
+  WHATSAPP_CONNECTOR_CALL_DIALING = 'WHATSAPP_CONNECTOR_CALL_DIALING::%<phone>s::%<channel_id>s'.freeze
+  # Os ids de mensagem que este app acabou de confirmar ao WhatsApp, por conversa, para o eco do
+  # recibo não ser lido como outro aparelho da conta abrindo a conversa.
+  WHATSAPP_SELF_READ_RECEIPT = 'WHATSAPP_SELF_READ_RECEIPT::%<conversation_id>s::%<source_id>s'.freeze
 end
