@@ -8,7 +8,8 @@
 # A árvore vem de `git ls-files --cached --others --exclude-standard` (pega os arquivos
 # recém-portados, que ainda não estão no índice). O banco nasce vazio a cada chamada
 # (tmpfs) e recebe db:create + db:schema:load antes do rspec. No modo --sh, nada é
-# carregado: os comandos decidem. Se o db/schema.rb mudar lá dentro, ele volta ao clone.
+# carregado: os comandos decidem. Com UAM_SCHEMA_OUT=1, um db/schema.rb que mudou lá dentro
+# volta ao clone (todo db:migrate regrava o arquivo, então isso é opt-in).
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
@@ -51,11 +52,13 @@ for p in sys.stdin.buffer.read().split(b"\0"):
 set +e
 "${COMPOSE[@]}" run --rm -T -v "$OUT:/out" app bash -c "
   (bundle check >/dev/null || bundle install --quiet) >&2 &&
-  cp db/schema.rb /out/schema.before && { $script; }; rc=\$?
+  cp db/schema.rb /out/schema.before && {
+$script
+}; rc=\$?
   cp db/schema.rb /out/schema.after; exit \$rc"
 rc=$?
 set -e
-if [ -f "$OUT/schema.after" ] && ! cmp -s "$OUT/schema.before" "$OUT/schema.after"; then
+if [ "${UAM_SCHEMA_OUT:-0}" = 1 ] && [ -f "$OUT/schema.after" ] && ! cmp -s "$OUT/schema.before" "$OUT/schema.after"; then
   cp "$OUT/schema.after" "$ROOT/db/schema.rb"
   echo "uam-spec: db/schema.rb atualizado no clone" >&2
 fi

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_19_143116) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -765,8 +765,12 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.jsonb "phone_number_health", default: {}, null: false
     t.datetime "phone_number_health_checked_at"
     t.string "phone_number_health_error", limit: 500
+    t.jsonb "provider_connection", default: {}
     t.index ["phone_number_health_checked_at"], name: "index_channel_whatsapp_on_phone_number_health_checked_at"
     t.index ["phone_number"], name: "index_channel_whatsapp_on_phone_number", unique: true
+    t.index "((provider_config ->> 'session_id'::text))", name: "index_channel_whatsapp_session_id", unique: true, where: "((provider)::text = ANY (ARRAY[('native'::character varying)::text, ('uazapi'::character varying)::text]))"
+    t.index "((provider_connection ->> 'connection'::text))", name: "index_channel_whatsapp_connection_state", where: "((provider)::text = ANY (ARRAY[('baileys'::character varying)::text, ('zapi'::character varying)::text, ('native'::character varying)::text, ('uazapi'::character varying)::text]))"
+    t.index ["provider_connection"], name: "index_channel_whatsapp_provider_connection", where: "((provider)::text = ANY (ARRAY[('baileys'::character varying)::text, ('zapi'::character varying)::text]))", using: :gin
   end
 
   create_table "companies", force: :cascade do |t|
@@ -793,6 +797,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.datetime "updated_at", null: false
     t.boolean "hmac_verified", default: false
     t.string "pubsub_token"
+    t.datetime "group_left_at"
+    t.datetime "whatsapp_missing_checked_at"
     t.index ["contact_id"], name: "index_contact_inboxes_on_contact_id"
     t.index ["inbox_id", "source_id"], name: "index_contact_inboxes_on_inbox_id_and_source_id", unique: true
     t.index ["inbox_id"], name: "index_contact_inboxes_on_inbox_id"
@@ -818,6 +824,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.string "country_code", default: ""
     t.boolean "blocked", default: false, null: false
     t.bigint "company_id"
+    t.integer "group_type", default: 0, null: false
     t.index "lower((email)::text), account_id", name: "index_contacts_on_lower_email_account_id"
     t.index ["account_id", "contact_type"], name: "index_contacts_on_account_id_and_contact_type"
     t.index ["account_id", "email", "phone_number", "identifier"], name: "index_contacts_on_nonempty_fields", where: "(((email)::text <> ''::text) OR ((phone_number)::text <> ''::text) OR ((identifier)::text <> ''::text))"
@@ -830,6 +837,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.index ["identifier", "account_id"], name: "uniq_identifier_per_account_contact", unique: true
     t.index ["name", "email", "phone_number", "identifier"], name: "index_contacts_on_name_email_phone_number_identifier", opclass: :gin_trgm_ops, using: :gin
     t.index ["phone_number", "account_id"], name: "index_contacts_on_phone_number_and_account_id"
+    t.index ["account_id", "group_type"], name: "index_contacts_on_account_id_and_group_type"
   end
 
   create_table "conversation_monitor_automation_deliveries", force: :cascade do |t|
@@ -1016,6 +1024,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.bigint "assignee_agent_bot_id"
     t.string "ai_assignee_type"
     t.datetime "status_changed_at"
+    t.integer "group_type", default: 0, null: false
     t.index ["account_id", "display_id"], name: "index_conversations_on_account_id_and_display_id", unique: true
     t.index ["account_id", "id"], name: "index_conversations_on_id_and_account_id"
     t.index ["account_id", "inbox_id", "status", "assignee_id"], name: "conv_acid_inbid_stat_asgnid_idx"
@@ -1035,6 +1044,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.index ["team_id"], name: "index_conversations_on_team_id"
     t.index ["uuid"], name: "index_conversations_on_uuid", unique: true
     t.index ["waiting_since"], name: "index_conversations_on_waiting_since"
+    t.index ["account_id", "group_type"], name: "index_conversations_on_account_id_and_group_type"
+    t.index ["inbox_id", "group_type"], name: "index_conversations_on_inbox_id_and_group_type"
   end
 
   create_table "copilot_action_items", force: :cascade do |t|
@@ -1303,6 +1314,19 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "group_members", force: :cascade do |t|
+    t.bigint "group_contact_id", null: false
+    t.bigint "contact_id", null: false
+    t.integer "role", default: 0, null: false
+    t.boolean "is_active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_group_members_on_contact_id"
+    t.index ["group_contact_id", "contact_id"], name: "index_group_members_on_group_contact_id_and_contact_id", unique: true
+    t.index ["group_contact_id", "is_active"], name: "index_group_members_on_group_contact_id_and_is_active"
+    t.index ["group_contact_id"], name: "index_group_members_on_group_contact_id"
   end
 
   create_table "inbox_assignment_policies", force: :cascade do |t|
@@ -1815,6 +1839,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_10_19_143116) do
   add_foreign_key "conversation_monitor_work_items", "conversations", on_delete: :cascade
   add_foreign_key "conversation_monitors", "accounts", on_delete: :cascade
   add_foreign_key "conversation_monitors", "users", on_delete: :nullify
+  add_foreign_key "group_members", "contacts", column: "group_contact_id"
+  add_foreign_key "group_members", "contacts"
   add_foreign_key "inboxes", "portals"
   add_foreign_key "user_sessions", "users"
   create_trigger("accounts_after_insert_row_tr", :generated => true, :compatibility => 1).
