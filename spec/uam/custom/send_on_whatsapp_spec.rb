@@ -8,7 +8,9 @@ describe Whatsapp::SendOnWhatsappService do
   let(:contact) { create(:contact, account: channel.account, phone_number: '+5541999990000') }
   let(:contact_inbox) { create(:contact_inbox, contact: contact, inbox: channel.inbox, source_id: '5541999990000') }
   let(:conversation) { create(:conversation, inbox: channel.inbox, account: channel.account, contact: contact, contact_inbox: contact_inbox) }
-  let(:message) { create(:message, conversation: conversation, account: channel.account, inbox: channel.inbox, message_type: :outgoing, content: 'oi') }
+  let(:message) do
+    create(:message, conversation: conversation, account: channel.account, inbox: channel.inbox, message_type: :outgoing, content: 'oi')
+  end
 
   it 'grava o source_id que a sessão devolveu' do
     allow_any_instance_of(Whatsapp::Session::Facade).to receive(:send_message).and_return('WAID1') # rubocop:disable RSpec/AnyInstance
