@@ -136,4 +136,7 @@ module Redis::RedisKeys
   # Os ids de mensagem que este app acabou de confirmar ao WhatsApp, por conversa, para o eco do
   # recibo não ser lido como outro aparelho da conta abrindo a conversa.
   WHATSAPP_SELF_READ_RECEIPT = 'WHATSAPP_SELF_READ_RECEIPT::%<conversation_id>s::%<source_id>s'.freeze
+  # Quando saiu a mensagem mais nova que um recibo de entrega ou leitura confirmou, por contato e
+  # caixa, para uma consulta de número que ainda esperava o provedor quando o recibo chegou.
+  WHATSAPP_RECEIPT_SEEN = 'WHATSAPP_RECEIPT_SEEN::%<inbox_id>d::%<contact_id>d'.freeze
 end

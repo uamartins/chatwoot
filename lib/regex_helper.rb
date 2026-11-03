@@ -21,5 +21,6 @@ module RegexHelper
   WHATSAPP_BSUID_REGEX = Regexp.new("\\A#{WHATSAPP_BSUID_PATTERN}\\z")
   WHATSAPP_WAMID_TOKEN_REGEX = Regexp.new(WHATSAPP_WAMID_TOKEN_PATTERN, Regexp::IGNORECASE)
   TWILIO_CHANNEL_WHATSAPP_REGEX = Regexp.new("\\A(?:whatsapp:\\+\\d{1,15}|whatsapp:#{WHATSAPP_BSUID_PATTERN})\\z")
-  WHATSAPP_CHANNEL_REGEX = Regexp.new("\\A(?:\\d{1,15}|#{WHATSAPP_BSUID_PATTERN})\\z")
+  # uam: como na fazer.ai, aceita os ids do native: LID com até 20 dígitos e grupo "<id>-<id>".
+  WHATSAPP_CHANNEL_REGEX = Regexp.new("\\A(?:\\d{1,20}(?:-\\d{1,20})?|#{WHATSAPP_BSUID_PATTERN})\\z")
 end

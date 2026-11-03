@@ -1,0 +1,5 @@
+# uam: as specs do fork ficam agrupadas por assunto (spec/uam), não pelo caminho da classe.
+inherit_from: ../../.rubocop.yml
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
